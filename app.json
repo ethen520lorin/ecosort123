@@ -1,10 +1,16 @@
 {
   "expo": {
     "name": "EcoSort",
-    "slug": "ecosort",
+    "slug": "ecosort-assessment4",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "scheme": "ecosort",
+    "splash": {
+      "backgroundColor": "#F7F4ED",
+      "resizeMode": "contain"
+    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -12,13 +18,13 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ecosort",
+      "package": "com.ecosort.assessment4",
       "adaptiveIcon": {
-        "backgroundColor": "#0F2F24"
+        "backgroundColor": "#F7F4ED"
       }
     },
-    "extra": {
-      "assessment": "ecosort"
+    "web": {
+      "bundler": "metro"
     }
   }
 }
