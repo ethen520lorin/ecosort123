@@ -8,7 +8,7 @@ export function HistoryScreen(): React.ReactElement {
     <ScreenShell
       eyebrow="Persistent data"
       title="Scan history"
-      subtitle="Assessment 4 will use local storage first, then optional Firebase sync."
+      subtitle=""
     >
       <View style={styles.emptyState}>
         <Text style={styles.emptyIcon}>◷</Text>

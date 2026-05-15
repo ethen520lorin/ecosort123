@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "EcoSort Assessment 4",
-    "slug": "ecosort-assessment4-tsx",
+    "name": "EcoSort",
+    "slug": "ecosort",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -12,13 +12,13 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ecosort.assessment4",
+      "package": "com.ecosort",
       "adaptiveIcon": {
         "backgroundColor": "#0F2F24"
       }
     },
     "extra": {
-      "assessment": "CSE3MAD Assessment 4"
+      "assessment": "ecosort"
     }
   }
 }
