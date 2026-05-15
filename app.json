@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "EcoSort",
-    "slug": "ecosort-assessment4",
+    "slug": "ecosort",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -18,7 +18,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ecosort.assessment4",
+      "package": "com.ecosort",
       "adaptiveIcon": {
         "backgroundColor": "#F7F4ED"
       }
