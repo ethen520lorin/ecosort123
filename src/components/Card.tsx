@@ -7,6 +7,17 @@ export function Card({ children, style, muted = false }: { children: ReactNode; 
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: theme.colors.surface, borderRadius: theme.radius.lg, borderWidth: 1, borderColor: theme.colors.border, padding: theme.spacing.lg, ...theme.shadow.card },
-  muted: { backgroundColor: theme.colors.surfaceMuted, shadowOpacity: 0, elevation: 0 },
+  card: {
+    backgroundColor: theme.colors.surfaceRaised,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    padding: theme.spacing.lg,
+    ...theme.shadow.card,
+  },
+  muted: {
+    backgroundColor: theme.colors.canvasSoft,
+    borderColor: theme.colors.border,
+    ...theme.shadow.none,
+  },
 });

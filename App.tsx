@@ -70,7 +70,7 @@ export default function App() {
     try {
       const scheduledAt = await scheduleRecyclingReminder();
       await updateSettings({ ...settings, notificationScheduledAt: scheduledAt });
-      Alert.alert('Reminder scheduled', 'A local reminder will appear shortly for assessment demonstration.');
+      Alert.alert('Reminder scheduled', 'A local reminder will appear shortly so you can test the reminder flow.');
     } catch (error) {
       Alert.alert('Notifications', error instanceof Error ? error.message : 'Could not schedule reminder.');
     }
@@ -81,8 +81,8 @@ export default function App() {
   const renderScreen = () => {
     switch (screen) {
       case 'home': return <HomeScreen navigate={navigate} history={history} settings={settings} />;
-      case 'search': return <SearchScreen navigate={navigate} />;
-      case 'scan': return <SearchScreen navigate={navigate} />;
+      case 'search': return <SearchScreen onSaveResult={handleSaveResult} />;
+      case 'scan': return <SearchScreen onSaveResult={handleSaveResult} />;
       case 'history': return <HistoryScreen history={history} onClear={handleClearHistory} />;
       case 'location': return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} />;
       case 'device': return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} />;

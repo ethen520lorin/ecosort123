@@ -18,7 +18,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ecosort",
+      "package": "com.ecosort.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#F7F4ED"
       }

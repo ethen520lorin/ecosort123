@@ -13,8 +13,8 @@ export function StatTile({ label, value, hint }: { label: string; value: string;
 }
 
 const styles = StyleSheet.create({
-  tile: { flex: 1, backgroundColor: theme.colors.surface, borderRadius: 22, borderWidth: 1, borderColor: theme.colors.border, padding: 16, minHeight: 112 },
+  tile: { flex: 1, backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radius.lg, borderWidth: 1, borderColor: theme.colors.border, padding: 15, minHeight: 108, justifyContent: 'space-between' },
   label: { ...theme.typography.label, color: theme.colors.textSubtle, textTransform: 'uppercase' },
-  value: { fontSize: 26, lineHeight: 32, color: theme.colors.text, fontWeight: '900', marginTop: 10 },
-  hint: { ...theme.typography.small, color: theme.colors.textMuted, marginTop: 6 },
+  value: { fontSize: 25, lineHeight: 31, color: theme.colors.text, fontWeight: '800', letterSpacing: -0.45 },
+  hint: { ...theme.typography.caption, color: theme.colors.textMuted },
 });
