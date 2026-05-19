@@ -4,9 +4,9 @@ EcoSort is a React Native and Expo mobile app for privacy-aware recycling guidan
 
 ## Current snapshot
 
-**Commit 05** — `feat: add privacy offline mode and haptic feedback`
+**Commit 08** — `feat: integrate expo-location and council detection`
 
-Add privacy-first mode, offline demo state, cached rule metadata, and haptic feedback.
+Integrate location permission and council context detection for location-aware guidance.
 
 ## Features in this snapshot
 
@@ -14,6 +14,9 @@ Add privacy-first mode, offline demo state, cached rule metadata, and haptic fee
 - Council-aware disposal guidance
 - Privacy-aware scan history
 - Offline-friendly cached rules
+- Permission-first onboarding
+- Camera scanner workflow
+- Location-based council context
 
 ## Requirements
 

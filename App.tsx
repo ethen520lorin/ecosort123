@@ -11,6 +11,9 @@ import { SettingsScreen } from './src/screens/SettingsScreen';
 import { AppScreen, AppSettings, AuthSession, CouncilRule, ScanHistoryEntry, SearchSource } from './src/types';
 import { clearStoredHistory, defaultSettings, loadAuthSession, loadHistory, loadOnboardingComplete, loadSettings, saveHistory, saveOnboardingComplete, saveSettings } from './src/services/storageService';
 import { createHistoryEntry } from './src/services/historyWorkflowService';
+import { OnboardingScreen } from './src/screens/OnboardingScreen';
+import { ScannerScreen } from './src/screens/ScannerScreen';
+import { LocationScreen } from './src/screens/LocationScreen';
 
 const scheduleRecyclingReminder = async () => new Date().toISOString();
 const tabItems = [
@@ -25,7 +28,7 @@ export default function App() {
   const [screen, setScreen] = useState<AppScreen>('home');
   const [history, setHistory] = useState<ScanHistoryEntry[]>([]);
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
-  const [onboardingComplete, setOnboardingComplete] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [session, setSession] = useState<AuthSession | null>(null);
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export default function App() {
       .then(([storedHistory, storedSettings, onboarded, auth]) => {
         setHistory(storedHistory);
         setSettings(storedSettings);
-        if (false) setOnboardingComplete(onboarded);
+        setOnboardingComplete(onboarded);
         setSession(auth);
       })
       .catch(() => Alert.alert('Storage', 'EcoSort could not restore local data.'));
@@ -82,9 +85,9 @@ export default function App() {
     switch (screen) {
       case 'home': return <HomeScreen navigate={navigate} history={history} settings={settings} />;
       case 'search': return <SearchScreen onSaveResult={handleSaveResult} />;
-      case 'scan': return <SearchScreen onSaveResult={handleSaveResult} />;
+      case 'scan': return <ScannerScreen onSaveResult={handleSaveResult} />;
       case 'history': return <HistoryScreen history={history} onClear={handleClearHistory} />;
-      case 'location': return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} />;
+      case 'location': return <LocationScreen settings={settings} onChange={updateSettings} />;
       case 'device': return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} />;
       case 'account': return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} />;
       case 'settings':
@@ -92,6 +95,10 @@ export default function App() {
     }
   };
 
+
+  if (!onboardingComplete) {
+    return <OnboardingScreen onComplete={completeOnboarding} />;
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
