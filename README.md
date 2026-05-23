@@ -4,9 +4,9 @@ EcoSort is a React Native and Expo mobile app for privacy-aware recycling guidan
 
 ## Current snapshot
 
-**Commit 08** — `feat: integrate expo-location and council detection`
+**Commit 10** — `feat: add local notification reminders`
 
-Integrate location permission and council context detection for location-aware guidance.
+Add local notification scheduling for recycling reminders.
 
 ## Features in this snapshot
 
@@ -17,6 +17,8 @@ Integrate location permission and council context detection for location-aware g
 - Permission-first onboarding
 - Camera scanner workflow
 - Location-based council context
+- Battery and sensor diagnostics
+- Local recycling reminders
 
 ## Requirements
 

@@ -14,8 +14,9 @@ import { createHistoryEntry } from './src/services/historyWorkflowService';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { ScannerScreen } from './src/screens/ScannerScreen';
 import { LocationScreen } from './src/screens/LocationScreen';
+import { DeviceLabScreen } from './src/screens/DeviceLabScreen';
+import { scheduleRecyclingReminder } from './src/services/notificationService';
 
-const scheduleRecyclingReminder = async () => new Date().toISOString();
 const tabItems = [
   { key: 'home' as AppScreen, label: 'Home', icon: '⌂' },
   { key: 'search' as AppScreen, label: 'Search', icon: '⌕' },
@@ -88,10 +89,10 @@ export default function App() {
       case 'scan': return <ScannerScreen onSaveResult={handleSaveResult} />;
       case 'history': return <HistoryScreen history={history} onClear={handleClearHistory} />;
       case 'location': return <LocationScreen settings={settings} onChange={updateSettings} />;
-      case 'device': return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} />;
+      case 'device': return <DeviceLabScreen />;
       case 'account': return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} />;
       case 'settings':
-      default: return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} onScheduleReminder={undefined} />;
+      default: return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} onScheduleReminder={handleScheduleReminder} />;
     }
   };
 

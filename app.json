@@ -25,7 +25,8 @@
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION"
+        "ACCESS_COARSE_LOCATION",
+        "POST_NOTIFICATIONS"
       ]
     },
     "web": {
@@ -43,7 +44,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "EcoSort uses approximate location to suggest local council recycling rules."
         }
-      ]
+      ],
+      "expo-notifications"
     ]
   }
 }
