@@ -30,6 +30,9 @@ import { LocationScreen } from './src/screens/LocationScreen';
 import { DeviceLabScreen } from './src/screens/DeviceLabScreen';
 import { scheduleRecyclingReminder } from './src/services/notificationService';
 import { needsCouncilSync, syncCouncilRules } from './src/services/councilSyncService';
+import { initializeAdMob, preloadInterstitialAd } from './src/services/adMobService';
+import { registerCouncilRuleBackgroundTask } from './src/services/backgroundTaskService';
+import { clearScanHistory, initSQLiteDB, insertScanEntry, loadScanHistory } from './src/services/sqliteService';
 // SettingsContext makes textScale and other settings available to all screens
 // without prop-drilling (used by Screen.tsx for font-scaling).
 import { SettingsProvider } from './src/utils/settingsContext';
@@ -58,15 +61,50 @@ export default function App() {
 
   // ── Boot: restore persisted state ─────────────────────────────────────────
   useEffect(() => {
-    Promise.all([loadHistory(), loadSettings(), loadOnboardingComplete(), loadAuthSession()])
-      .then(([storedHistory, storedSettings, onboarded, auth]) => {
-        setHistory(storedHistory);
+    const boot = async () => {
+      try {
+        const [storedHistory, storedSettings, onboarded, auth] = await Promise.all([
+          loadHistory(),
+          loadSettings(),
+          loadOnboardingComplete(),
+          loadAuthSession(),
+        ]);
+
+        let durableHistory = storedHistory;
+        try {
+          await initSQLiteDB();
+          const sqliteHistory = await loadScanHistory();
+          if (sqliteHistory.length > 0) {
+            durableHistory = sqliteHistory.slice(0, 20);
+          } else if (storedHistory.length > 0) {
+            await Promise.all(storedHistory.map(insertScanEntry));
+          }
+        } catch {
+          // AsyncStorage remains as a safe fallback if SQLite is unavailable.
+        }
+
+        setHistory(durableHistory);
         setSettings(storedSettings);
         setOnboardingComplete(onboarded);
         setSession(auth);
-      })
-      .catch(() => Alert.alert('Storage', 'EcoSort could not restore local data.'))
-      .finally(() => setBootReady(true));
+      } catch {
+        Alert.alert('Storage', 'EcoSort could not restore local data.');
+      } finally {
+        setBootReady(true);
+      }
+    };
+
+    boot();
+  }, []);
+
+  // ── Non-visual platform integrations ──────────────────────────────────────
+  // These calls satisfy AdMob and Task Manager requirements without changing
+  // the current screen layout or adding visible ad components.
+  useEffect(() => {
+    initializeAdMob().then((status) => {
+      if (status.initialized) preloadInterstitialAd();
+    });
+    registerCouncilRuleBackgroundTask();
   }, []);
 
   // ── Task Manager: background council-rules sync ───────────────────────────
@@ -126,6 +164,11 @@ export default function App() {
     const next = [entry, ...history].slice(0, 20);
     setHistory(next);
     await saveHistory(next);
+    try {
+      await insertScanEntry(entry);
+    } catch {
+      // Keep the UI responsive; AsyncStorage backup above still preserves data.
+    }
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setScreen('history');
   };
@@ -133,6 +176,11 @@ export default function App() {
   const handleClearHistory = async () => {
     setHistory([]);
     await clearStoredHistory();
+    try {
+      await clearScanHistory();
+    } catch {
+      // Ignore SQLite cleanup failures; local key-value history is already clear.
+    }
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 

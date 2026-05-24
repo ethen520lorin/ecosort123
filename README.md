@@ -60,3 +60,4 @@ src/
 ## Product notes
 
 EcoSort is designed as a clean, mobile-first product with a restrained green and warm-neutral palette, clear calls to action, large touch targets, graceful empty states, and friendly error messages.
+

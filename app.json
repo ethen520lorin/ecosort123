@@ -26,7 +26,11 @@
         "CAMERA",
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "POST_NOTIFICATIONS"
+        "POST_NOTIFICATIONS",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
       ]
     },
     "web": {
@@ -45,7 +49,33 @@
           "locationAlwaysAndWhenInUsePermission": "EcoSort uses approximate location to suggest local council recycling rules."
         }
       ],
-      "expo-notifications"
-    ]
+      "expo-notifications",
+      "expo-sqlite",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+          "iosAppId": "ca-app-pub-3940256099942544~1458002511",
+          "delayAppMeasurementInit": true
+        }
+      ],
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": ""
+      },
+      "adMob": {
+        "usesGoogleSampleIdsByDefault": true,
+        "productionBannerUnitIdEnv": "EXPO_PUBLIC_ADMOB_BANNER_UNIT_ID",
+        "productionInterstitialUnitIdEnv": "EXPO_PUBLIC_ADMOB_INTERSTITIAL_UNIT_ID"
+      }
+    },
+    "owner": ""
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-3940256099942544~3347511713",
+    "ios_app_id": "ca-app-pub-3940256099942544~1458002511",
+    "delay_app_measurement_init": true
   }
 }
