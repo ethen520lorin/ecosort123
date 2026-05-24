@@ -45,7 +45,7 @@ export function SearchScreen({ onSaveResult }: { onSaveResult: (rule: CouncilRul
 
 const styles = StyleSheet.create({
   label: { ...theme.typography.label, color: theme.colors.textSubtle, marginBottom: 8, textTransform: 'uppercase' },
-  button: { marginTop: 12 },
+  button: { marginTop: 12,color:"#347A5A" },
   groupTitle: { ...theme.typography.caption, color: theme.colors.textMuted, marginTop: 18, marginBottom: 10, fontWeight: '700' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { borderRadius: theme.radius.pill, backgroundColor: theme.colors.canvasSoft, borderWidth: 1, borderColor: theme.colors.border, paddingHorizontal: 13, paddingVertical: 9 },

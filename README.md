@@ -2,12 +2,6 @@
 
 EcoSort is a React Native and Expo mobile app for privacy-aware recycling guidance. It helps users search local disposal rules, understand the right bin, and keep a lightweight history of recycling decisions.
 
-## Current snapshot
-
-**Commit 10** — `feat: add local notification reminders`
-
-Add local notification scheduling for recycling reminders.
-
 ## Features in this snapshot
 
 - Manual recycling rule search
@@ -19,6 +13,8 @@ Add local notification scheduling for recycling reminders.
 - Location-based council context
 - Battery and sensor diagnostics
 - Local recycling reminders
+- Firebase sign-in and account state
+- Firestore scan history sync
 
 ## Requirements
 
@@ -43,6 +39,10 @@ npm start
 ```bash
 npm run android
 ```
+
+## Firebase configuration
+
+Create a local `.env` file from `.env.example` and provide your Firebase Web API key and project ID. Do not commit real secrets.
 
 ## Project structure
 

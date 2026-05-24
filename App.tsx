@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, SafeAreaView, StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Alert, AppState, SafeAreaView, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import { theme } from './src/theme/theme';
@@ -8,21 +8,38 @@ import { HomeScreen } from './src/screens/HomeScreen';
 import { SearchScreen } from './src/screens/SearchScreen';
 import { HistoryScreen } from './src/screens/HistoryScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { LoginScreen } from './src/screens/LoginScreen';
+import { AccountScreen } from './src/screens/AccountScreen';
 import { AppScreen, AppSettings, AuthSession, CouncilRule, ScanHistoryEntry, SearchSource } from './src/types';
-import { clearStoredHistory, defaultSettings, loadAuthSession, loadHistory, loadOnboardingComplete, loadSettings, saveHistory, saveOnboardingComplete, saveSettings } from './src/services/storageService';
+import {
+  clearStoredHistory,
+  defaultSettings,
+  loadAuthSession,
+  loadHistory,
+  loadOnboardingComplete,
+  loadSettings,
+  saveAuthSession,
+  saveHistory,
+  saveOnboardingComplete,
+  saveSettings,
+} from './src/services/storageService';
 import { createHistoryEntry } from './src/services/historyWorkflowService';
 import { OnboardingScreen } from './src/screens/OnboardingScreen';
 import { ScannerScreen } from './src/screens/ScannerScreen';
 import { LocationScreen } from './src/screens/LocationScreen';
 import { DeviceLabScreen } from './src/screens/DeviceLabScreen';
 import { scheduleRecyclingReminder } from './src/services/notificationService';
+import { needsCouncilSync, syncCouncilRules } from './src/services/councilSyncService';
+// SettingsContext makes textScale and other settings available to all screens
+// without prop-drilling (used by Screen.tsx for font-scaling).
+import { SettingsProvider } from './src/utils/settingsContext';
 
 const tabItems = [
   { key: 'home' as AppScreen, label: 'Home', icon: '⌂' },
   { key: 'search' as AppScreen, label: 'Search', icon: '⌕' },
   { key: 'scan' as AppScreen, label: 'Scan', icon: '□' },
   { key: 'history' as AppScreen, label: 'History', icon: '◷' },
-  { key: 'settings' as AppScreen, label: 'More', icon: '···' },
+  { key: 'settings' as AppScreen, label: 'Settings', icon: '···' },
 ];
 
 export default function App() {
@@ -31,7 +48,15 @@ export default function App() {
   const [settings, setSettings] = useState<AppSettings>(defaultSettings);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [session, setSession] = useState<AuthSession | null>(null);
+  const [bootReady, setBootReady] = useState(false);
 
+  // Ref mirrors so AppState listener always reads latest values without stale closure.
+  const settingsRef = useRef(settings);
+  const sessionRef  = useRef(session);
+  useEffect(() => { settingsRef.current = settings; }, [settings]);
+  useEffect(() => { sessionRef.current  = session;  }, [session]);
+
+  // ── Boot: restore persisted state ─────────────────────────────────────────
   useEffect(() => {
     Promise.all([loadHistory(), loadSettings(), loadOnboardingComplete(), loadAuthSession()])
       .then(([storedHistory, storedSettings, onboarded, auth]) => {
@@ -40,8 +65,39 @@ export default function App() {
         setOnboardingComplete(onboarded);
         setSession(auth);
       })
-      .catch(() => Alert.alert('Storage', 'EcoSort could not restore local data.'));
+      .catch(() => Alert.alert('Storage', 'EcoSort could not restore local data.'))
+      .finally(() => setBootReady(true));
   }, []);
+
+  // ── Task Manager: background council-rules sync ───────────────────────────
+  // Triggered each time the app returns to the foreground (AppState active).
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', async (nextState) => {
+      if (nextState !== 'active') return;
+      if (!sessionRef.current) return;               // not logged in — skip
+      if (!needsCouncilSync(settingsRef.current)) return; // cache is fresh — skip
+
+      try {
+        const { updatedSettings } = await syncCouncilRules(settingsRef.current);
+        // Persist and update state through the normal channel
+        setSettings(updatedSettings);
+        await saveSettings(updatedSettings);
+      } catch {
+        // Silent background failure — the user is never interrupted for a sync issue
+      }
+    });
+    return () => subscription.remove();
+  }, []); // empty deps: listener is registered once; reads state via refs
+
+  // ── Main app ──────────────────────────────────────────────────────────────
+  const activeTab = useMemo(
+    () => (tabItems.some((item) => item.key === screen) ? screen : 'settings'),
+    [screen],
+  );
+
+  if (!bootReady) return null;
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
 
   const navigate = (next: AppScreen) => setScreen(next);
 
@@ -53,6 +109,16 @@ export default function App() {
   const completeOnboarding = async () => {
     setOnboardingComplete(true);
     await saveOnboardingComplete(true);
+  };
+
+  const handleLogin = async (s: AuthSession) => {
+    await saveAuthSession(s);
+    setSession(s);
+  };
+
+  const handleSignOut = async () => {
+    await saveAuthSession(null);
+    setSession(null);
   };
 
   const handleSaveResult = async (rule: CouncilRule, source: SearchSource) => {
@@ -80,33 +146,57 @@ export default function App() {
     }
   };
 
-  const activeTab = useMemo(() => tabItems.some((item) => item.key === screen) ? screen : 'settings', [screen]);
-
-  const renderScreen = () => {
-    switch (screen) {
-      case 'home': return <HomeScreen navigate={navigate} history={history} settings={settings} />;
-      case 'search': return <SearchScreen onSaveResult={handleSaveResult} />;
-      case 'scan': return <ScannerScreen onSaveResult={handleSaveResult} />;
-      case 'history': return <HistoryScreen history={history} onClear={handleClearHistory} />;
-      case 'location': return <LocationScreen settings={settings} onChange={updateSettings} />;
-      case 'device': return <DeviceLabScreen />;
-      case 'account': return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} />;
-      case 'settings':
-      default: return <SettingsScreen settings={settings} onChange={updateSettings} navigate={navigate} onScheduleReminder={handleScheduleReminder} />;
-    }
-  };
-
-
+  // ── Onboarding gate ───────────────────────────────────────────────────────
   if (!onboardingComplete) {
     return <OnboardingScreen onComplete={completeOnboarding} />;
   }
 
+  // ── Auth gate ─────────────────────────────────────────────────────────────
+  if (!session) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
+
+  const renderScreen = () => {
+    switch (screen) {
+      case 'home':     return <HomeScreen navigate={navigate} history={history} settings={settings} />;
+      case 'search':   return <SearchScreen onSaveResult={handleSaveResult} />;
+      case 'scan':     return <ScannerScreen onSaveResult={handleSaveResult} />;
+      case 'history':  return <HistoryScreen history={history} onClear={handleClearHistory} />;
+      case 'location': return <LocationScreen settings={settings} onChange={updateSettings} onBack={() => navigate('settings')} />;
+      case 'device':   return <DeviceLabScreen onBack={() => navigate('settings')} />;
+      case 'account':
+        return (
+          <AccountScreen
+            settings={settings}
+            session={session}
+            history={history}
+            onSignOut={handleSignOut}
+            onBack={() => navigate('settings')}
+          />
+        );
+      case 'settings':
+      default:
+        return (
+          <SettingsScreen
+            settings={settings}
+            onChange={updateSettings}
+            navigate={navigate}
+            onScheduleReminder={handleScheduleReminder}
+          />
+        );
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <StatusBar style="dark" />
-      <View style={styles.appFrame}>{renderScreen()}</View>
-      <BottomNav current={activeTab} onChange={navigate} items={tabItems} />
-    </SafeAreaView>
+    // Wrap the entire app in SettingsProvider so Screen.tsx (and any other
+    // component) can consume settings (especially textScale) via useSettings().
+    <SettingsProvider value={settings}>
+      <SafeAreaView style={styles.safeArea}>
+        <StatusBar style="dark" />
+        <View style={styles.appFrame}>{renderScreen()}</View>
+        <BottomNav current={activeTab} onChange={navigate} items={tabItems} />
+      </SafeAreaView>
+    </SettingsProvider>
   );
 }
 

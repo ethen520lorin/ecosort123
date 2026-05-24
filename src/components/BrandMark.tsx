@@ -24,18 +24,49 @@ export function BrandMark({ compact = false, style }: BrandMarkProps) {
 }
 
 const styles = StyleSheet.create({
-  wrap: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  wrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+
   logoShell: {
-    width: 42,
-    height: 42,
-    borderRadius: 16,
+    width: 48,
+    height: 48,
+
+    borderRadius: 18,
+
     backgroundColor: theme.colors.primaryTint,
+
     borderWidth: 1,
-    borderColor: theme.colors.hairline,
+    borderColor: 'rgba(0,0,0,0.04)',
+
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logo: { width: 30, height: 30 },
-  name: { fontSize: 18, lineHeight: 22, fontWeight: '800', color: theme.colors.text, letterSpacing: -0.2 },
-  tagline: { ...theme.typography.caption, color: theme.colors.textMuted, marginTop: 1 },
+
+  logo: {
+    width: 32,
+    height: 32,
+  },
+
+  name: {
+    fontSize: 19,
+    lineHeight: 22,
+
+    fontWeight: '800',
+
+    letterSpacing: -0.4,
+
+    color: theme.colors.text,
+  },
+
+  tagline: {
+    fontSize: 12,
+    lineHeight: 16,
+
+    marginTop: 2,
+
+    color: theme.colors.textMuted,
+  },
 });

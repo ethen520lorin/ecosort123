@@ -1,6 +1,9 @@
+// LocationScreen.tsx
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text } from 'react-native';
+import { Alert, StyleSheet, Text, Pressable } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
+
 import { Screen } from '../components/Screen';
 import { Card } from '../components/Card';
 import { AppButton } from '../components/AppButton';
@@ -8,7 +11,15 @@ import { AppSettings } from '../types';
 import { theme } from '../theme/theme';
 import { permissionErrorMessage } from '../utils/errorMessages';
 
-export function LocationScreen({ settings, onChange }: { settings: AppSettings; onChange: (settings: AppSettings) => void }) {
+export function LocationScreen({ 
+  settings, 
+  onChange,
+  onBack,
+}: { 
+  settings: AppSettings; 
+  onChange: (settings: AppSettings) => void;
+  onBack: () => void;
+}) {
   const [loading, setLoading] = useState(false);
   const detect = async () => {
     setLoading(true);
@@ -25,6 +36,11 @@ export function LocationScreen({ settings, onChange }: { settings: AppSettings; 
 
   return (
     <Screen title="Location context" subtitle="Use approximate location to keep recycling guidance aligned with local council rules.">
+      <Pressable style={styles.backButton} onPress={onBack}>
+        <Ionicons name="chevron-back" size={20} color={theme.colors.textMuted} />
+        <Text style={styles.backButtonText}>Back</Text>
+      </Pressable>
+
       <Card>
         <Text style={styles.label}>Active council</Text>
         <Text style={styles.value}>{settings.locationCouncil || 'Not detected yet'}</Text>
@@ -36,6 +52,8 @@ export function LocationScreen({ settings, onChange }: { settings: AppSettings; 
 }
 
 const styles = StyleSheet.create({
+  backButton: { flexDirection: 'row', alignItems: 'center', marginBottom: 16, alignSelf: 'flex-start' },
+  backButtonText: { ...theme.typography.body, color: theme.colors.textMuted, marginLeft: 4, fontWeight: '600' },
   label: { ...theme.typography.label, color: theme.colors.textSubtle, textTransform: 'uppercase' },
   value: { ...theme.typography.h1, color: theme.colors.text, marginTop: 8 },
   text: { ...theme.typography.body, color: theme.colors.textMuted, marginTop: 10 },

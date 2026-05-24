@@ -1,14 +1,38 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { theme } from '../theme/theme';
+import { Home, Search, Scan, Clock, Settings } from 'lucide-react-native'; 
+
 import { AppScreen } from '../types';
 import { tabAccessibilityLabel } from '../utils/accessibility';
 
+
 interface Item {
-  key: AppScreen;
+  key: AppScreen; 
   label: string;
   icon?: string;
 }
+
+const renderIcon = (key: string, active: boolean) => {
+  const color = active ? '#1B3B2B' : '#72777A'; 
+  const size = 24;
+  const strokeWidth = 2;
+
+  switch (key.toLowerCase()) {
+    case 'home':
+      return <Home color={color} size={size} strokeWidth={strokeWidth} />;
+    case 'search':
+      return <Search color={color} size={size} strokeWidth={strokeWidth} />;
+    case 'scan':
+      return <Scan color={color} size={size} strokeWidth={strokeWidth} />;
+    case 'history':
+      return <Clock color={color} size={size} strokeWidth={strokeWidth} />;
+    case 'settings':
+      return <Settings color={color} size={size} strokeWidth={strokeWidth} />;
+    default:
+      return null;
+  }
+};
+
 
 export function BottomNav({
   current,
@@ -38,7 +62,9 @@ export function BottomNav({
                 pressed && styles.pressed,
               ]}
             >
-
+              <View style={styles.iconWrapper}>
+                {renderIcon(item.key as string, active)}
+              </View>
 
               <Text style={[styles.label, active && styles.activeLabel]}>
                 {item.label}
@@ -50,70 +76,63 @@ export function BottomNav({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   outer: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    paddingHorizontal: 18,
-    paddingBottom: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 24, 
     paddingTop: 8,
-    backgroundColor: 'rgba(245, 242, 236, 0.84)',
+    backgroundColor: '#FAFAFA', 
   },
 
   wrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 254, 251, 0.96)',
-    borderRadius: 30,
-    borderWidth: 1,
-    borderColor: 'rgba(28, 49, 39, 0.08)',
+    backgroundColor: '#FFFFFF', 
+    borderRadius: 32,
     padding: 6,
-    ...theme.shadow.soft,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3, 
   },
 
   item: {
     flex: 1,
-    minHeight: 58,
+    minHeight: 64, 
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    paddingVertical: 8,
   },
 
   active: {
-    backgroundColor: '#EEF5EF',
-    borderWidth: 1,
-    borderColor: 'rgba(20, 88, 59, 0.08)',
+    backgroundColor: '#F0F5EC', 
+
   },
 
   pressed: {
     opacity: 0.78,
-    transform: [{ scale: 0.98 }],
+    transform: [{ scale: 0.96 }],
   },
 
-  activeGlow: {
-    position: 'absolute',
-    top: 8,
-    left: 14,
-    right: 14,
-    height: 18,
-    borderRadius: 999,
-    backgroundColor: 'transparent',
+  iconWrapper: {
+    marginBottom: 4, 
   },
-
 
   label: {
     fontSize: 12,
-    fontWeight: '700',
-    color: theme.colors.textSubtle,
-    letterSpacing: -0.08,
+    fontWeight: '600',
+    color: '#72777A', 
+    letterSpacing: 0,
   },
 
   activeLabel: {
-    color: theme.colors.primaryDark,
-    fontWeight: '900',
+    color: '#1B3B2B', 
+    fontWeight: '700',
   },
 });
